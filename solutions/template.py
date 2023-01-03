@@ -3,18 +3,18 @@ class Util:
 
   @staticmethod
   def parse_input(filename: str) -> list:
-      ...
+    ...
 
 
 class Solver:
 
   @staticmethod
   def solve_a(filename: str) -> int:
-      ...
+    ...
 
   @staticmethod
   def solve_b(filename: str) -> int:
-      ...
+    ...
 
 
 class TestClass:
@@ -31,5 +31,5 @@ if __name__ == '__main__':
   a = Solver.solve_a('input.txt')
   b = Solver.solve_b('input.txt')
 
-  print("{a=}")
-  print("{b=}")
+  print(f"{a=}")
+  print(f"{b=}")
