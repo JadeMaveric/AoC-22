@@ -54,9 +54,7 @@ class Util:
 
     @staticmethod
     def point_in_range(point: Beacon, sensor: Sensor) -> bool:
-        radius = Util.taxi_dist(
-            sensor.x, sensor.y, sensor.closest_beacon.x, sensor.closest_beacon.y
-        )
+        radius = sensor.radius
         distance = Util.taxi_dist(sensor.x, sensor.y, point.x, point.y)
 
         return distance <= radius
@@ -191,8 +189,10 @@ class Solver:
         Since there's only one point, it must lie just outside the safe_zone. So the search space
         can be limited by only considering points just beyond the radius of the sensor.
         This took 31:14 minutes to complete (for my solution, it only searched the first 8 beacons)
-        Minor optimisations (only return points in the limits from get_circumference and caching radius)
-        only reduced the time by ~4 minutes
+        The following optimisations helped
+        - early exit if possible when comparing a candidate point against the other beacons (this was a big one)
+        - only return points in the limits from get_circumference
+        - cache the radius of each beacon
         """
         sensors = Util.parse_input(filename)
         lower, upper = limits
@@ -211,11 +211,10 @@ class Solver:
                 if y < lower or y > upper:
                     continue
 
-                invisible_to_beacon = [
-                    not Util.point_in_range(Beacon(x, y), sensor) for sensor in sensors
-                ]
-
-                if all(invisible_to_beacon):
+                for s in sensors:
+                    if Util.point_in_range(Beacon(x, y), s):
+                        break
+                else:
                     return x * 4_000_000 + y
 
 
@@ -225,7 +224,7 @@ class TestClass:
         assert out == 26
 
     def test_b(self):
-        out = Solver.solve_b("input_eg.txt", (0, 20))
+        out = Solver.solve_b_v2("input_eg.txt", (0, 20))
         assert out == 56000011
 
 
